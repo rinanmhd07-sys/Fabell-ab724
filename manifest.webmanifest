@@ -1,8 +1,8 @@
 {
   "id": "/",
-  "name": "FABEL — Fashion Store",
-  "short_name": "FABEL",
-  "description": "Shop the latest styles at FABEL.",
+  "name": "Fabell — Fashion Store",
+  "short_name": "Fabell",
+  "description": "Shop the latest styles at Fabell.",
   "start_url": "/",
   "scope": "/",
   "display": "standalone",
