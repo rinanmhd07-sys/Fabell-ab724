@@ -184,7 +184,53 @@ svg{display:block}
 .cat{min-height:44px}.gp button{min-height:40px}
 @media(max-width:359px){.tag{display:none}.slide h2{max-width:100%}}
 @media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
-</style></head><body>
+
+/* Responsive storefront: keep the current mobile design, expand on larger screens. */
+@media(min-width:600px){
+ html,body{background:var(--bg)}
+ .frame{width:100%;max-width:none;margin:0;box-shadow:none}
+ .hero{width:100%;max-width:1440px;margin-inline:auto;height:clamp(420px,56vh,680px)}
+ .slide .tx{left:clamp(32px,7vw,100px);right:32px;bottom:clamp(70px,8vh,110px);max-width:650px}
+ .slide h2{font-size:clamp(44px,5vw,76px);line-height:.98;max-width:620px;letter-spacing:-2.5px}
+ .slide p{font-size:16px;max-width:480px}
+ .cats{justify-content:center;flex-wrap:wrap;padding:18px 24px;gap:10px}
+ .cols{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px;padding:8px clamp(24px,4vw,64px) 40px;max-width:1440px;margin:0 auto;width:100%}
+ .col{display:contents}
+ .pc{border-radius:18px}
+ .pi{aspect-ratio:3/4;overflow:hidden}
+ .pb{padding:14px 16px 18px}
+ .pb b{font-size:15px}
+ .pb span{font-size:16px}
+ .hdr{padding-inline:clamp(24px,4vw,64px);height:76px;max-width:1440px;margin-inline:auto;width:100%}
+ .hdr h1{font-size:19px}
+ .gal{max-width:900px;margin-inline:auto;width:100%;height:min(62vh,700px)}
+ .info{max-width:900px;margin-inline:auto;width:100%;padding:28px 36px 20px}
+ .bar{padding-inline:clamp(24px,4vw,64px)}
+ .bar .btn{max-width:420px}
+ .ci,.box,.sr{max-width:1000px;margin-left:auto;margin-right:auto;width:calc(100% - 48px);margin-bottom:12px}
+ .sb,.gp{max-width:1000px;margin-left:auto;margin-right:auto;width:calc(100% - 48px)}
+ .sh{max-width:1000px;margin:0 auto;width:100%;padding-left:24px}
+ .ovl{max-width:none;padding:24px}
+ .sheet{max-width:560px;margin-inline:auto;border-radius:24px}
+}
+@media(min-width:1000px){
+ .cols{grid-template-columns:repeat(4,minmax(0,1fr));gap:20px;padding-left:clamp(40px,5vw,80px);padding-right:clamp(40px,5vw,80px)}
+ .hero{height:min(62vh,720px)}
+ .slide .tx{left:clamp(48px,7vw,110px)}
+}
+@media(min-width:1500px){
+ .cols{grid-template-columns:repeat(5,minmax(0,1fr))}
+ .hero{border-radius:0 0 22px 22px}
+}
+
+</style>
+<link rel="manifest" href="/manifest.webmanifest">
+<meta name="theme-color" content="#111111">
+<meta name="application-name" content="FABEL">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="FABEL">
+<link rel="icon" href="/icon.svg" type="image/svg+xml">
+</head><body>
 <div class="frame" id="app"></div>
 <div id="ovl"></div><canvas id="cf" hidden></canvas><div class="toast" id="toast"></div>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -455,4 +501,9 @@ async function fabellInitSession(){const {data,error}=await fabellDb.auth.getSes
 
 render();
 setTimeout(async()=>{try{await fabellInitSession();await fabellLoadStore();if(state.currentScreen==='profile')render(true)}catch(e){console.warn(e);fabellLoadStore()}},0);
+</script>
+<script>
+if ('serviceWorker' in navigator && location.protocol === 'https:') {
+ window.addEventListener('load', () => navigator.serviceWorker.register('/sw.js').catch(err => console.warn('FABEL offline support unavailable:', err)));
+}
 </script></body></html>
