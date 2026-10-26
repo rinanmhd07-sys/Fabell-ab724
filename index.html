@@ -320,7 +320,7 @@ S.home=()=>`<div class="scr ${fabellRemotePayload?.settings?.announcement?'has-a
 <div class="cats" id="cats">${catsHTML()}</div><div id="grid">${gridHTML()}</div></div>`;
 S.detail=()=>{const p=byId(state.params.id),sz=sizesFor(p);
  return `<div class="scr sec fx"><div class="scroll"><div class="gal" id="gal"><div class="hh"><button class="ib" data-a="back" aria-label="Back">${ic('back')}</button><div class="r"><button class="ib" data-a="share" aria-label="Share">${ic('share')}</button>${heart(p.id).replace('class="heart','class="ib heart').replace('position:absolute','')}</div></div>
- <div class="trk" id="trk">${(p.images&&p.images.length?p.images:[null]).map((src,v)=>'<div class="gs" data-a="image-open" data-i="'+v+'" style="background:'+BG[v%BG.length]+'">'+(src?'<img src="'+esc(src)+'" alt="'+esc(p.n)+' image '+(v+1)+'" style="width:100%;height:100%;object-fit:contain;display:block">':art(p.k,p.col,v))+'</div>').join('')}</div>${p.images&&p.images.length>1?'<div class="gal-thumbs" id="gd">'+p.images.map((src,v)=>'<button type="button" class="gal-thumb '+(v===0?'on':'')+'" data-a="galleryPick" data-v="'+v+'" aria-label="View image '+(v+1)+'"><img src="'+esc(src)+'" alt=""></button>').join('')+'</div>':''}</div></div>
+ <div class="trk" id="trk">${(p.images&&p.images.length?p.images:[null]).map((src,v)=>'<div class="gs" data-a="image-open" data-i="'+v+'" style="background:'+BG[v%BG.length]+'">'+(src?'<img src="'+esc(src)+'" alt="'+esc(p.n)+' image '+(v+1)+'" style="width:100%;height:100%;object-fit:contain;display:block">':art(p.k,p.col,v))+'</div>').join('')}</div>${p.images&&p.images.length>1?'<div class="gal-thumbs" id="gd" aria-label="Product image position">'+p.images.map((src,v)=>'<button type="button" class="gal-thumb '+(v===0?'on':'')+'" data-a="galleryPick" data-v="'+v+'" aria-label="View image '+(v+1)+'"></button>').join('')+'</div>':''}</div></div>
  <div class="info"><span class="cp">${p.badge||(p.nw?'New Arrival':p.c)} </span><div class="tr"><h2>${p.n}</h2><span>${rs(p.p)}</span></div><p>${p.d}</p>
  ${sz?`<div class="sz"><h4>Select size</h4><div class="szs" id="szs">${szHTML(sz)}</div></div>`:''}</div></div>
  <div class="bar"><button class="btn ol" data-a="add">Add to Cart</button><button class="btn dk" data-a="buy">Buy Now</button></div></div>`};
@@ -500,6 +500,11 @@ document.addEventListener('click',async e=>{const el=e.target.closest('[data-a]'
 // Replace demo-only local tracking and cancellation actions with database-backed information.
 async function fabellInitSession(){const {data,error}=await fabellDb.auth.getSession();if(error)throw error;fabellSession=data.session;await fabellLoadCustomer()}
 
+// Smooth swipe-through product photos directly on homepage cards.
+let fabellCardTouch=null;
+document.addEventListener('touchstart',e=>{const box=e.target.closest('[data-card-swipe]');if(!box)return;fabellCardTouch={box,x:e.touches[0].clientX,y:e.touches[0].clientY,id:box.dataset.cardSwipe}},{passive:true});
+document.addEventListener('touchend',e=>{if(!fabellCardTouch)return;const t=fabellCardTouch;fabellCardTouch=null;const dx=e.changedTouches[0].clientX-t.x,dy=e.changedTouches[0].clientY-t.y;if(Math.abs(dx)<32||Math.abs(dx)<Math.abs(dy)*1.2)return;const gallery=t.box.querySelector('.card-gallery');if(!gallery)return;const count=gallery.children.length;let n=Number(t.box.dataset.imageIndex||0);n=(n+(dx<0?1:-1)+count)%count;t.box.dataset.imageIndex=String(n);gallery.style.transform='translateX('+(-n*100)+'%)';t.box.querySelectorAll('.card-dots i').forEach((dot,j)=>dot.classList.toggle('on',j===n));t.box.dataset.swiped='1';setTimeout(()=>{delete t.box.dataset.swiped},450);},{passive:true});
+document.addEventListener('click',e=>{const box=e.target.closest('[data-card-swipe]');if(box&&box.dataset.swiped==='1'){e.preventDefault();e.stopImmediatePropagation()}},true);
 render();
 setTimeout(async()=>{try{await fabellInitSession();await fabellLoadStore();if(state.currentScreen==='profile')render(true)}catch(e){console.warn(e);fabellLoadStore()}},0);
 </script>
