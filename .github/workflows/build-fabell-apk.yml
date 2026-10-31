@@ -2,6 +2,12 @@ name: Build Fabell APK
 
 on:
   workflow_dispatch:
+  push:
+    branches:
+      - main
+    paths:
+      - "android/**"
+      - ".github/workflows/build-fabell-apk.yml"
 
 permissions:
   contents: read
